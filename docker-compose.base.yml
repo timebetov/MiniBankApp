@@ -1,0 +1,91 @@
+services:
+  accounts-postgres:
+    container_name: accounts-db
+    ports:
+      - "5432:5432"
+    volumes:
+      - accounts-db:/var/lib/postgresql/data
+    extends:
+      file: common-config.yml
+      service: db-config
+    environment:
+      POSTGRES_DB: ${ACCOUNTS_DB_NAME}
+      POSTGRES_USER: ${ACCOUNTS_DB_USER}
+      POSTGRES_PASSWORD: ${ACCOUNTS_DB_USER_PWD}
+
+  transactions-postgres:
+    container_name: transactions-db
+    ports:
+      - "5433:5432"
+    volumes:
+      - transactions-db:/var/lib/postgresql/data
+    extends:
+      file: common-config.yml
+      service: db-config
+    environment:
+      POSTGRES_DB: ${TRANSACTIONS_DB_NAME}
+      POSTGRES_USER: ${TRANSACTIONS_DB_USER}
+      POSTGRES_PASSWORD: ${TRANSACTIONS_DB_USER_PWD}
+
+  keycloak-postgres:
+    container_name: keycloak-db
+    ports:
+      - "5434:5432"
+    volumes:
+      - keycloak-db:/var/lib/postgresql/data
+    extends:
+      file: common-config.yml
+      service: db-config
+    environment:
+      POSTGRES_DB: ${KC_DB_NAME}
+      POSTGRES_USER: ${KC_DB_USER}
+      POSTGRES_PASSWORD: ${KC_DB_USER_PWD}
+
+  keycloak-server:
+    image: quay.io/keycloak/keycloak:26.2.5
+    container_name: keycloak
+    command: start-dev
+    depends_on:
+      keycloak-postgres:
+        condition: service_healthy
+    ports:
+      - "8090:8080"
+    networks:
+      - banking
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://keycloak-postgres/${KC_DB_NAME}
+      KC_DB_USERNAME: ${KC_DB_USER}
+      KC_DB_PASSWORD: ${KC_DB_USER_PWD}
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_ADMIN}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_ADMIN_PWD}
+
+  notifications-mongo:
+    image: mongo
+    container_name: notifications-db
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - notifications-db:/data/db
+    networks:
+      - banking
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo mongodb://${MONGO_ROOT}:${MONGO_ROOT_PWD}@localhost:27017/admin --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PWD}
+
+networks:
+  banking:
+    driver: bridge
+
+volumes:
+  accounts-db:
+  transactions-db:
+  keycloak-db:
+  notifications-db:
