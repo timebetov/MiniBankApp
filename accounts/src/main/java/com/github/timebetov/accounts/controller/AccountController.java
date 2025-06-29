@@ -26,8 +26,8 @@ public class AccountController {
     }
 
     @PatchMapping("/{accountNumber}/withdraw")
-    public ResponseEntity<ResponseDTO> withdrawMoney(@PathVariable String accountNumber,
-                                                     @RequestParam Long amount) {
+    public ResponseEntity<ResponseDTO> withdrawMoney(@PathVariable("accountNumber") String accountNumber,
+                                                     @RequestParam(name = "amount") Long amount) {
 
         Long newBalance = service.withdrawFromAccount(accountNumber, amount);
         ResponseDTO response = ResponseDTO.builder()
@@ -38,8 +38,8 @@ public class AccountController {
     }
 
     @PatchMapping("/{accountNumber}/deposit")
-    public ResponseEntity<ResponseDTO> depositMoney(@PathVariable String accountNumber,
-                                                    @RequestParam Long amount) {
+    public ResponseEntity<ResponseDTO> depositMoney(@PathVariable("accountNumber") String accountNumber,
+                                                    @RequestParam(name = "amount") Long amount) {
 
         Long newBalance = service.depositForAccount(accountNumber, amount);
         ResponseDTO response = ResponseDTO.builder()
