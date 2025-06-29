@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
@@ -35,6 +36,7 @@ public class AccountService implements IAccountService {
         newAccount.setOwnerFirstName(claims.getClaimAsString("given_name"));
         newAccount.setOwnerLastName(claims.getClaimAsString("family_name"));
         newAccount.setBalance(0L);
+        newAccount.setCreatedAt(LocalDateTime.now());
 
         Account savedAccount = repository.save(newAccount);
         return AccountMapper.toDTO(savedAccount);

@@ -1,4 +1,4 @@
-package com.github.timebetov.accounts.dto;
+package com.github.timebetov.transactions.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -4,6 +4,7 @@ import com.github.timebetov.accounts.dto.AccountDTO;
 import com.github.timebetov.accounts.service.IAccountService;
 import com.github.timebetov.dto.ResponseDTO;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/accounts", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -57,7 +59,7 @@ public class AccountController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<AccountDTO> getAccount(@PathVariable String userId) {
+    public ResponseEntity<AccountDTO> getAccount(@PathVariable("userId") String userId) {
 
         AccountDTO accountDetails = service.getAccountForUserById(userId);
         return ResponseEntity.ok(accountDetails);

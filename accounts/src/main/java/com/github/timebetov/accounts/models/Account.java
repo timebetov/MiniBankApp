@@ -3,6 +3,8 @@ package com.github.timebetov.accounts.models;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Builder
 @Getter @Setter
@@ -29,4 +31,7 @@ public class Account {
 
     @Column(nullable = false)
     private String keycloakUserId;
+
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 }

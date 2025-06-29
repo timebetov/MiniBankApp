@@ -22,8 +22,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/accounts").hasRole("CUSTOMER")
                         .requestMatchers(HttpMethod.GET, "/accounts/me").hasRole("CUSTOMER")
                         .requestMatchers(HttpMethod.PATCH, "/accounts/**").hasAnyRole("ADMIN", "TRANSFER")
+                        .requestMatchers(HttpMethod.GET, "/accounts/{userId}").hasAnyRole("ADMIN", "TRANSFER")
                         .requestMatchers("/actuator/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/accounts/{userId}").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(serverConf -> serverConf.jwt(
                         jwtConf -> jwtConf.jwtAuthenticationConverter(jwtAuthenticationConverter())
