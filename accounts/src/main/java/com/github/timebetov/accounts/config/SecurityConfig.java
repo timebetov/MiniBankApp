@@ -3,6 +3,7 @@ package com.github.timebetov.accounts.config;
 import com.github.timebetov.securityUtils.KeyCloakRoleConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -18,7 +19,12 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable);
         http.sessionManagement(scm -> scm.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.authorizeHttpRequests(request -> request
-                        .requestMatchers("/actuator/**").hasRole("ADMIN"))
+                        .requestMatchers(HttpMethod.POST, "/accounts").hasRole("CUSTOMER")
+                        .requestMatchers(HttpMethod.GET, "/accounts/me").hasRole("CUSTOMER")
+                        .requestMatchers(HttpMethod.PATCH, "/accounts/**").hasAnyRole("ADMIN", "TRANSFER")
+                        .requestMatchers("/actuator/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/accounts/{userId}").hasRole("ADMIN")
+                        .anyRequest().authenticated())
                 .oauth2ResourceServer(serverConf -> serverConf.jwt(
                         jwtConf -> jwtConf.jwtAuthenticationConverter(jwtAuthenticationConverter())
                 ));
